@@ -1,11 +1,26 @@
 import ChatBubbleOutlineRounded from "@mui/icons-material/ChatBubbleOutlineRounded";
 import { AppBar, Box, CssBaseline, Toolbar, Typography } from "@mui/material";
-import ChatHeader from "./components/ChatHeader";
-import ConversationList from "./components/ConversationList";
-import MessageInput from "./components/MessageInput";
-import MessageList from "./components/MessageList";
+import ChatHeader from "./features/chat/components/ChatHeader";
+import ConversationList from "./features/chat/components/ConversationList";
+import MessageInput from "./features/chat/components/MessageInput";
+import MessageList from "./features/chat/components/MessageList";
+
+import {
+  conversations,
+  currentUser,
+  messageDayLabel,
+  messages,
+  selectedConversation,
+} from "./features/chat/data/mockChatData";
 
 function App() {
+  const participant =
+    selectedConversation.participants.find(
+      (user) => user.id !== currentUser.id,
+    ) ?? selectedConversation.participants[0];
+  const conversationMessages = messages.filter(
+    (message) => message.conversationId === selectedConversation.id,
+  );
   return (
     <>
       <CssBaseline />
@@ -60,10 +75,14 @@ function App() {
             mx: "auto",
           }}
         >
-          <ConversationList />
+          <ConversationList
+            conversations={conversations}
+            currentUserId={currentUser.id}
+            selectedConversationId={selectedConversation.id}
+          />
           <Box
             component="section"
-            aria-label="Chat with Bob"
+            aria-label={`Chat with ${participant.name}`}
             sx={{
               flex: 1,
               minWidth: 0,
@@ -73,8 +92,13 @@ function App() {
               bgcolor: "#fff",
             }}
           >
-            <ChatHeader />
-            <MessageList />
+            <ChatHeader user={participant} />
+            <MessageList
+              messages={conversationMessages}
+              currentUserId={currentUser.id}
+              participants={selectedConversation.participants}
+              dayLabel={messageDayLabel}
+            />
             <MessageInput />
           </Box>
         </Box>

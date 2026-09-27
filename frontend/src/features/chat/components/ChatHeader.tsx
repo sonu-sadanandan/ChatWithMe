@@ -1,6 +1,12 @@
 import { Avatar, Box, Typography } from "@mui/material";
 
-export default function ChatHeader() {
+import type { User } from "../types/user";
+
+interface ChatHeaderProps {
+  user: User;
+}
+
+export default function ChatHeader({ user }: ChatHeaderProps) {
   return (
     <Box
       component="header"
@@ -15,11 +21,11 @@ export default function ChatHeader() {
       }}
     >
       <Avatar sx={{ bgcolor: "#eeebff", color: "#6551c9", fontWeight: 600 }}>
-        B
+        {user.name.charAt(0)}
       </Avatar>
       <Box>
         <Typography component="h2" variant="subtitle1" sx={{ fontWeight: 700 }}>
-          Bob
+          {user.name}
         </Typography>
         <Box sx={{ display: "flex", alignItems: "center", gap: 0.75 }}>
           <Box
@@ -28,11 +34,11 @@ export default function ChatHeader() {
               width: 7,
               height: 7,
               borderRadius: "50%",
-              bgcolor: "#299b70",
+              bgcolor: user.isOnline ? "#299b70" : "#9aa2b1",
             }}
           />
           <Typography variant="caption" sx={{ color: "#526b61" }}>
-            Online
+            {user.isOnline ? "Online" : "Offline"}
           </Typography>
         </Box>
       </Box>

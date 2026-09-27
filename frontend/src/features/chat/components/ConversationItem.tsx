@@ -1,44 +1,25 @@
-import {
-  Avatar,
-  Badge,
-  Box,
-  List,
-  ListItem,
-  ListItemText,
-  Typography,
-} from "@mui/material";
+import { Avatar, Badge, Box, ListItem, ListItemText, Typography } from "@mui/material";
+import type { Conversation } from "../types/conversation";
+import type { User } from "../types/user";
 
-export default function ConversationList() {
+interface ConversationItemProps {
+  conversation: Conversation;
+  currentUserId: User["id"];
+  isSelected: boolean;
+}
+
+export default function ConversationItem({ conversation, currentUserId, isSelected }: ConversationItemProps) {
+  const participant = conversation.participants.find((user) => user.id !== currentUserId) ?? conversation.participants[0];
+
   return (
-    <Box
-      component="aside"
-      aria-labelledby="conversations-heading"
-      sx={{
-        width: { xs: "100%", sm: 260, md: 300 },
-        flexShrink: 0,
-        p: { xs: 1.5, sm: 2.5 },
-        borderRight: { sm: "1px solid #e6e9f0" },
-        borderBottom: { xs: "1px solid #e6e9f0", sm: 0 },
-        bgcolor: "#fbfcfe",
-      }}
-    >
-      <Typography
-        id="conversations-heading"
-        component="h2"
-        variant="subtitle2"
-        sx={{ mb: { xs: 1, sm: 2.5 }, color: "#697389", fontWeight: 700 }}
-      >
-        Conversations
-      </Typography>
-      <List disablePadding aria-label="Conversations">
         <ListItem
-          aria-current="true"
+          aria-current={isSelected ? "true" : undefined}
           sx={{
             gap: 1.5,
             p: 1.5,
             borderRadius: 2.5,
-            bgcolor: "#eeebff",
-            border: "1px solid #e1dafb",
+            bgcolor: isSelected ? "#eeebff" : "transparent",
+            border: isSelected ? "1px solid #e1dafb" : "1px solid transparent",
           }}
         >
           <Badge
@@ -47,18 +28,18 @@ export default function ConversationList() {
             anchorOrigin={{ vertical: "bottom", horizontal: "right" }}
             sx={{
               "& .MuiBadge-badge": {
-                bgcolor: "#299b70",
+                bgcolor: participant.isOnline ? "#299b70" : "#9aa2b1",
                 width: 11,
                 height: 11,
                 borderRadius: "50%",
-                border: "2px solid #eeebff",
+                border: `2px solid ${isSelected ? "#eeebff" : "#fbfcfe"}`,
               },
             }}
           >
             <Avatar
               sx={{ bgcolor: "#ddd6fb", color: "#5c46b3", fontWeight: 600 }}
             >
-              B
+              {participant.name.charAt(0)}
             </Avatar>
           </Badge>
           <ListItemText
@@ -73,18 +54,18 @@ export default function ConversationList() {
                 }}
               >
                 <Typography component="span" sx={{ fontWeight: 600 }}>
-                  Bob
+                  {participant.name}
                 </Typography>
                 <Typography
                   component="span"
                   variant="caption"
                   sx={{ color: "#586878" }}
                 >
-                  Online
+                  {participant.isOnline ? "Online" : "Offline"}
                 </Typography>
               </Box>
             }
-            secondary="Sounds good! See you then."
+            secondary={conversation.lastMessage?.content ?? "No messages yet"}
             slotProps={{
               secondary: {
                 noWrap: true,
@@ -93,7 +74,5 @@ export default function ConversationList() {
             }}
           />
         </ListItem>
-      </List>
-    </Box>
   );
 }
