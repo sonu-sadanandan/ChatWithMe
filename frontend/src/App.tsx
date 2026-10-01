@@ -1,5 +1,7 @@
 import ChatBubbleOutlineRounded from "@mui/icons-material/ChatBubbleOutlineRounded";
 import { AppBar, Box, CssBaseline, Toolbar, Typography } from "@mui/material";
+import { useState } from "react";
+import type { Message } from "./features/chat/types/message";
 import ChatHeader from "./features/chat/components/ChatHeader";
 import ConversationList from "./features/chat/components/ConversationList";
 import MessageInput from "./features/chat/components/MessageInput";
@@ -9,11 +11,12 @@ import {
   conversations,
   currentUser,
   messageDayLabel,
-  messages,
+  messages as mockMessages,
   selectedConversation,
 } from "./features/chat/data/mockChatData";
 
 function App() {
+  const [messages, setMessages] = useState<Message[]>(() => [...mockMessages]);
   const participant =
     selectedConversation.participants.find(
       (user) => user.id !== currentUser.id,
@@ -21,6 +24,27 @@ function App() {
   const conversationMessages = messages.filter(
     (message) => message.conversationId === selectedConversation.id,
   );
+  const displayedConversations = conversations.map((conversation) => ({
+    ...conversation,
+    lastMessage:
+      messages.findLast((message) => message.conversationId === conversation.id) ??
+      conversation.lastMessage,
+  }));
+
+  function handleSend(content: string) {
+    const trimmedContent = content.trim();
+    if (!trimmedContent) return;
+
+    const message: Message = {
+      id: crypto.randomUUID(),
+      conversationId: selectedConversation.id,
+      senderId: currentUser.id,
+      content: trimmedContent,
+      timestamp: new Date().toISOString(),
+    };
+    setMessages((previousMessages) => [...previousMessages, message]);
+  }
+
   return (
     <>
       <CssBaseline />
@@ -76,7 +100,7 @@ function App() {
           }}
         >
           <ConversationList
-            conversations={conversations}
+            conversations={displayedConversations}
             currentUserId={currentUser.id}
             selectedConversationId={selectedConversation.id}
           />
@@ -99,7 +123,7 @@ function App() {
               participants={selectedConversation.participants}
               dayLabel={messageDayLabel}
             />
-            <MessageInput />
+            <MessageInput onSend={handleSend} />
           </Box>
         </Box>
       </Box>

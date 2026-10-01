@@ -48,7 +48,7 @@ export default function MessageBubble({ message, currentUserId, sender }: Messag
       >
         <Typography
           variant="body2"
-          sx={{ lineHeight: 1.65, overflowWrap: "anywhere" }}
+          sx={{ lineHeight: 1.65, overflowWrap: "anywhere", whiteSpace: "pre-wrap" }}
         >
           {message.content}
         </Typography>
@@ -62,4 +62,3 @@ export default function MessageBubble({ message, currentUserId, sender }: Messag
     </Box>
   );
 }
-
