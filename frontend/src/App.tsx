@@ -1,26 +1,26 @@
 import ChatBubbleOutlineRounded from "@mui/icons-material/ChatBubbleOutlineRounded";
 import { AppBar, Box, CssBaseline, Toolbar, Typography } from "@mui/material";
+import CurrentUserSelect from "./features/chat/components/CurrentUserSelect";
 import ChatHeader from "./features/chat/components/ChatHeader";
 import ConversationList from "./features/chat/components/ConversationList";
 import MessageInput from "./features/chat/components/MessageInput";
 import MessageList from "./features/chat/components/MessageList";
 
-import {
-  conversations,
-  currentUser,
-  messageDayLabel,
-  messages,
-  selectedConversation,
-} from "./features/chat/data/mockChatData";
+import useChat from "./features/chat/hooks/useChat";
 
 function App() {
-  const participant =
-    selectedConversation.participants.find(
-      (user) => user.id !== currentUser.id,
-    ) ?? selectedConversation.participants[0];
-  const conversationMessages = messages.filter(
-    (message) => message.conversationId === selectedConversation.id,
-  );
+  const {
+    users,
+    currentUser,
+    setCurrentUserId,
+    participant,
+    selectedConversation,
+    displayedConversations,
+    conversationMessages,
+    messageDayLabel,
+    sendMessage,
+  } = useChat();
+
   return (
     <>
       <CssBaseline />
@@ -42,7 +42,7 @@ function App() {
             borderBottom: "1px solid #e6e9f0",
           }}
         >
-          <Toolbar sx={{ gap: 1.5 }}>
+          <Toolbar sx={{ gap: 1.5, flexWrap: "wrap", py: 1.5 }}>
             <Box
               sx={{
                 display: "flex",
@@ -61,6 +61,11 @@ function App() {
             >
               ChatWithMe
             </Typography>
+            <CurrentUserSelect
+              users={users}
+              currentUserId={currentUser.id}
+              onUserChange={setCurrentUserId}
+            />
           </Toolbar>
         </AppBar>
         <Box
@@ -76,7 +81,7 @@ function App() {
           }}
         >
           <ConversationList
-            conversations={conversations}
+            conversations={displayedConversations}
             currentUserId={currentUser.id}
             selectedConversationId={selectedConversation.id}
           />
@@ -99,7 +104,7 @@ function App() {
               participants={selectedConversation.participants}
               dayLabel={messageDayLabel}
             />
-            <MessageInput />
+            <MessageInput key={currentUser.id} onSend={sendMessage} />
           </Box>
         </Box>
       </Box>

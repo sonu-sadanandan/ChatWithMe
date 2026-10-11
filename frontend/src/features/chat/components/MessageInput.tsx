@@ -1,9 +1,29 @@
 import SendRounded from "@mui/icons-material/SendRounded";
 import { Box, Button, TextField } from "@mui/material";
+import { useState } from "react";
 
-export default function MessageInput() {
+interface MessageInputProps {
+  onSend: (content: string) => void;
+}
+
+export default function MessageInput({ onSend }: MessageInputProps) {
+  const [draft, setDraft] = useState("");
+
+  function sendMessage() {
+    const content = draft.trim();
+    if (!content) return;
+
+    onSend(content);
+    setDraft("");
+  }
+
   return (
     <Box
+      component="form"
+      onSubmit={(event) => {
+        event.preventDefault();
+        sendMessage();
+      }}
       sx={{
         display: "flex",
         alignItems: "center",
@@ -17,6 +37,16 @@ export default function MessageInput() {
     >
       <TextField
         fullWidth
+        multiline
+        maxRows={4}
+        value={draft}
+        onChange={(event) => setDraft(event.target.value)}
+        onKeyDown={(event) => {
+          if (event.key === "Enter" && !event.shiftKey && !event.nativeEvent.isComposing && event.keyCode !== 229) {
+            event.preventDefault();
+            sendMessage();
+          }
+        }}
         placeholder="Type a message..."
         slotProps={{ htmlInput: { "aria-label": "Message" } }}
         sx={{
@@ -24,10 +54,10 @@ export default function MessageInput() {
         }}
       />
       <Button
-        type="button"
+        type="submit"
         variant="contained"
-        disabled
-        aria-label="Send message (not available yet)"
+        disabled={!draft.trim()}
+        aria-label="Send message"
         sx={{ minWidth: 56, height: 56, borderRadius: 3 }}
       >
         <SendRounded />

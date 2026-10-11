@@ -1,4 +1,5 @@
 import { Box, Typography } from "@mui/material";
+import { useEffect, useRef } from "react";
 import MessageBubble from "./MessageBubble";
 import type { Message } from "../types/message";
 import type { User } from "../types/user";
@@ -11,8 +12,17 @@ interface MessageListProps {
 }
 
 export default function MessageList({ messages, currentUserId, participants, dayLabel }: MessageListProps) {
+  const historyRef = useRef<HTMLDivElement>(null);
+  const lastMessageId = messages.at(-1)?.id;
+
+  useEffect(() => {
+    const history = historyRef.current;
+    if (history) history.scrollTop = history.scrollHeight;
+  }, [lastMessageId]);
+
   return (
     <Box
+      ref={historyRef}
       role="region"
       aria-label="Message history"
       tabIndex={0}
