@@ -2,13 +2,16 @@ import type { Conversation } from "../types/conversation";
 import type { Message } from "../types/message";
 import type { User } from "../types/user";
 
-export const currentUser: User = {
+const alice: User = {
   id: "user-alice",
   name: "Alice",
   isOnline: true,
 };
 
 const bob: User = { id: "user-bob", name: "Bob", isOnline: true };
+export const users: User[] = [alice, bob];
+export const defaultCurrentUserId = alice.id;
+
 const conversationId = "conversation-alice-bob";
 
 export const messages: Message[] = [
@@ -22,7 +25,7 @@ export const messages: Message[] = [
   {
     id: "message-2",
     conversationId,
-    senderId: currentUser.id,
+    senderId: alice.id,
     content: "Hey Bob! Pretty good, thanks. How about you?",
     timestamp: "2026-09-27T10:31:00Z",
   },
@@ -36,7 +39,7 @@ export const messages: Message[] = [
   {
     id: "message-4",
     conversationId,
-    senderId: currentUser.id,
+    senderId: alice.id,
     content: "Absolutely. Let’s meet at our usual place at 3.",
     timestamp: "2026-09-27T10:33:00Z",
   },
@@ -51,7 +54,7 @@ export const messages: Message[] = [
 
 export const selectedConversation: Conversation = {
   id: conversationId,
-  participants: [currentUser, bob],
+  participants: [alice, bob],
   lastMessage: messages[messages.length - 1] ?? null,
 };
 
