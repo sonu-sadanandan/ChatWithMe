@@ -1,54 +1,25 @@
 import ChatBubbleOutlineRounded from "@mui/icons-material/ChatBubbleOutlineRounded";
 import { AppBar, Box, CssBaseline, Toolbar, Typography } from "@mui/material";
-import { useState } from "react";
-import type { Message } from "./features/chat/types/message";
-import type { User } from "./features/chat/types/user";
 import CurrentUserSelect from "./features/chat/components/CurrentUserSelect";
 import ChatHeader from "./features/chat/components/ChatHeader";
 import ConversationList from "./features/chat/components/ConversationList";
 import MessageInput from "./features/chat/components/MessageInput";
 import MessageList from "./features/chat/components/MessageList";
 
-import {
-  conversations,
-  defaultCurrentUserId,
-  users,
-  messageDayLabel,
-  messages as mockMessages,
-  selectedConversation,
-} from "./features/chat/data/mockChatData";
+import useChat from "./features/chat/hooks/useChat";
 
 function App() {
-  const [currentUserId, setCurrentUserId] = useState<User["id"]>(defaultCurrentUserId);
-  const currentUser = users.find((user) => user.id === currentUserId)!;
-  const [messages, setMessages] = useState<Message[]>(() => [...mockMessages]);
-  const participant =
-    selectedConversation.participants.find(
-      (user) => user.id !== currentUser.id,
-    ) ?? selectedConversation.participants[0];
-  const conversationMessages = messages.filter(
-    (message) => message.conversationId === selectedConversation.id,
-  );
-  const displayedConversations = conversations.map((conversation) => ({
-    ...conversation,
-    lastMessage:
-      messages.findLast((message) => message.conversationId === conversation.id) ??
-      conversation.lastMessage,
-  }));
-
-  function handleSend(content: string) {
-    const trimmedContent = content.trim();
-    if (!trimmedContent) return;
-
-    const message: Message = {
-      id: crypto.randomUUID(),
-      conversationId: selectedConversation.id,
-      senderId: currentUser.id,
-      content: trimmedContent,
-      timestamp: new Date().toISOString(),
-    };
-    setMessages((previousMessages) => [...previousMessages, message]);
-  }
+  const {
+    users,
+    currentUser,
+    setCurrentUserId,
+    participant,
+    selectedConversation,
+    displayedConversations,
+    conversationMessages,
+    messageDayLabel,
+    sendMessage,
+  } = useChat();
 
   return (
     <>
@@ -133,7 +104,7 @@ function App() {
               participants={selectedConversation.participants}
               dayLabel={messageDayLabel}
             />
-            <MessageInput key={currentUser.id} onSend={handleSend} />
+            <MessageInput key={currentUser.id} onSend={sendMessage} />
           </Box>
         </Box>
       </Box>
