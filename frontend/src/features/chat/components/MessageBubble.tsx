@@ -8,12 +8,10 @@ interface MessageBubbleProps {
   sender: User | undefined;
 }
 
-// Keep the static demo's displayed times consistent across browser time zones.
-const timeFormatter = new Intl.DateTimeFormat("en-US", {
+// Use the browser's regional format and the system's local time zone.
+const timeFormatter = new Intl.DateTimeFormat(undefined, {
   hour: "numeric",
   minute: "2-digit",
-  hour12: true,
-  timeZone: "UTC",
 });
 
 export default function MessageBubble({ message, currentUserId, sender }: MessageBubbleProps) {
